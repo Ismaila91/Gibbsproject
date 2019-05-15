@@ -80,7 +80,7 @@ gpp_reg <- function(pp, Qimage, int, method='nopen', tuning='BIC', f.dummy=2,Pr=
   index.optim.theta = NULL
   Q.new <- cbind(1,Q)
   H.theta <- V.theta <- NULL
-  H.theta <- vcov(temp, hessian=TRUE)
+  H.theta <- vcov(temp, what="fisher", hessian=TRUE)
   if(n > 2500){ V.theta <- Emp_vcov(X=pp,cov.nb=tot.cov,Prob=Pr,trend.f=as.formula(paste('~',rhs)),int.m=int,cov.list=cov.list, 
                                     nb.it=100,f.dum=f.dummy) }
   else{ V.theta <- vcov(temp)}
