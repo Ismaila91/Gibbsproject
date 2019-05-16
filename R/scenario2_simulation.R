@@ -1,12 +1,5 @@
 # Scenario 2: Building multicolinearity
-W <- owin(c(0,1000),c(0,500))
-Qim1 <- array(0, dim=c(101,201,50))
-Qim1[,,1] <- bei.extra$elev$v
-Qim1[,,2] <- bei.extra$grad$v
-for(i in 3:50) { Qim1[,,i] <- rnoise(rnorm,dimyx=c(101,201),w=W,mean=0,sd=1)$v }
-Qim1.cr <- Standardize.cov(Qim1,W)
-beta0.sc12 <- round ( log((4000/ integral( exp(2*Qim1.cr[[1]]+0.75*Qim1.cr[[2]]),W) ) ),4)
-trend.function <- exp(2*Qim1.cr[[1]]+0.75*Qim1.cr[[2]])
+## Runner scenario 1 avant
 Sigma <- matrix(NA, nrow=50, ncol=50) 
 for(i in 1:50) Sigma[i,] <- 0.7^(abs(i-(1:50)))
 Sigma[1,2] <- Sigma[2,1] <- 0
