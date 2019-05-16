@@ -44,7 +44,7 @@ Strauss.ERIC.AEnet.Sc1 <- Simulation.GPP(number.iterations=100,beta0=beta0.sc12,
 
 save(Strauss.BIC.Lasso.Sc1,Strauss.ERIC.Lasso.Sc1,Strauss.BIC.Ridge.Sc1,Strauss.ERIC.Ridge.Sc1,Strauss.BIC.Enet.Sc1,
      Strauss.ERIC.Enet.Sc1,Strauss.BIC.ALasso.Sc1,Strauss.ERIC.ALasso.Sc1,Strauss.BIC.AEnet.Sc1,
-     Strauss.ERIC.AEnet.Sc1, file="/Users/ismailaba/Documents/R Gibbs/Strauss.Sc1.RData")
+     Strauss.ERIC.AEnet.Sc1, file="data/Strauss.Scenario1.RData")
 
 ######-------------------------- gamma=1 for Poisson model
 
