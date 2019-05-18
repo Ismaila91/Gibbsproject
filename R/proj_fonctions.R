@@ -27,7 +27,7 @@ gpp_reg <- function(pp, Qimage, int, method='nopen', tuning='BIC', f.dummy=2,Pr=
   n <- npoints(pp)
   n.dummy <- round(f.dummy*sqrt(n))
   temp <- ppm(pp, trend=as.formula(paste('~',rhs)), interaction=int, covariates=cov.list, nd=n.dummy) 
-  
+  #browser()
   temp_glm <- temp$internal$glmfit$data[,1:(length(temp$coef)+1)]
   yy <- temp_glm[,2]
   N <- length(yy)
@@ -80,10 +80,11 @@ gpp_reg <- function(pp, Qimage, int, method='nopen', tuning='BIC', f.dummy=2,Pr=
   index.optim.theta = NULL
   Q.new <- cbind(1,Q)
   H.theta <- V.theta <- NULL
-  H.theta <- vcov(temp, what="fisher", hessian=TRUE)
+  H.theta <- vcov(temp, what="fisher", hessian=TRUE, fine=TRUE)
+  #browser()
   if(n > 2500){ V.theta <- Emp_vcov(X=pp,cov.nb=tot.cov,Prob=Pr,trend.f=as.formula(paste('~',rhs)),int.m=int,cov.list=cov.list, 
                                     nb.it=100,f.dum=f.dummy) }
-  else{ V.theta <- vcov(temp)}
+  else{ V.theta <- vcov(temp, fine=TRUE)}
   H <- V <- NULL
   for (i in 1:length(lambda))
   {
@@ -120,6 +121,7 @@ Simulation.GPP <- function(Model="strauss",number.iterations=50,beta0,par.intera
   Theta <- matrix(NA, nrow=number.iterations,ncol=dim(Qim)[3]+2)
   for(i in 1:number.iterations){
     X <- rmh(mod, start=list(n.start=ns), control=list(nrep=1e6), verbose=FALSE)
+    #browser()
     Theta[i,] <- gpp_reg(pp=X, Qimage=Qim, int=int.mod, method=met, tuning=inf.criteria, f.dummy=f.dum,Pr=Pr)[[2]]
   }
   return(Theta)
@@ -131,7 +133,7 @@ Emp_vcov <- function(X,cov.nb,Prob,trend.f,int.m,cov.list,nb.it,f.dum){
     X.th <- rthin(X, P=Prob)
     n.dum <- round(f.dum*sqrt(npoints(X.th)))
     temp.th <- ppm(X.th, trend=trend.f, interaction=int.m, covariates=cov.list, nd=n.dum)
-    VCOV.X.th[,,i] <- vcov(temp.th)
+    VCOV.X.th[,,i] <- vcov(temp.th, fine=TRUE)
   }
   return(apply(VCOV.X.th, 1:2, mean))
 }
