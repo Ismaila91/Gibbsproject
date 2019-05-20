@@ -166,6 +166,11 @@ FPR.Scenario12 <- function(Vect){
   return(sum(Vect[4:51]!=0)/48)
 }
 
+# Computation of FPR, False positive rate for scenario 3
+FPR.Scenario3 <- function(Vect){
+  return(sum(Vect[4:16]!=0)/13)
+}
+
 # Computation of PPV, Positive predictive value
 PPV.Scenario12 <- function(Vect){
   n <- length(Vect)
@@ -179,11 +184,12 @@ PPV.Scenario12 <- function(Vect){
 ## Properties of the estimate
 
 ## Properties of the estimate: Bias, Variance, MSE, TPR and FPR
-Estimate.Properties <- function(Est.theta, init.theta) {
+Estimate.Properties <- function(Est.theta, init.theta, Scenario) {
   Bias.est <- sqrt(sum((apply(Est.theta,2,mean)[-1] - init.theta[-1])^2))
   Var.est <- sum(apply(Est.theta,2,var)[-1])
   MSE.est <- Bias.est^2 + Var.est
-  FPR.est <- 100*mean(apply(Est.theta, 1, FPR.Scenario12))
+  if(Scenario=="1" | Scenario=="2"){ FPR.est <- 100*mean(apply(Est.theta, 1, FPR.Scenario12))}
+  else FPR.est <- 100*mean(apply(Est.theta, 1, FPR.Scenario3))
   TPR.est <- 100*mean(apply(Est.theta, 1, TPR.Scenario12))
   return(list(Bias=Bias.est, Var=Var.est, MSE=MSE.est, FPR=FPR.est, TPR=TPR.est))
 }
