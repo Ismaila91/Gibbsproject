@@ -1,4 +1,5 @@
-## Scenario 1
+## ---- Scenario1 ----
+library(spatstat)
 W <- owin(c(0,1000),c(0,500))
 Qim1 <- array(0, dim=c(101,201,50))
 Qim1[,,1] <- bei.extra$elev$v
@@ -8,7 +9,12 @@ Qim1.cr <- Standardize.cov(Qim1,W)
 beta0.sc1 <- round ( log((4000/ integral( exp(2*Qim1.cr[[1]]+0.75*Qim1.cr[[2]]),W) ) ),4)
 trend.function1 <- exp(2*Qim1.cr[[1]]+0.75*Qim1.cr[[2]])
 
-########################-------------------- Simulation Results for Scenario 1
+## ---- Theta1 ----
+Theta.Init.Strauss1 <- c(beta0.sc1,2,0.75,rep(0,48),log(0.5))
+Theta.Init.Poisson1 <- c(beta0.sc1,2,0.75,rep(0,48),log(1))
+Theta.Init.Geyer1 <- c(beta0.sc1,2,0.75,rep(0,48),log(1.5))
+
+## ---- Simulation Results for Scenario 1 ----
 
 ######-------------------------- gamma=0.5 for strauss model
 

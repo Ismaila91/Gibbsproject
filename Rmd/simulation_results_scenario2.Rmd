@@ -1,0 +1,47 @@
+---
+title: "Simulation Results: Scenario 2"
+author: "Ismaila Ba"
+date: '2019-05-20'
+output: pdf_document
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::read_chunk(here::here("R", "proj_fonctions.R"))
+knitr::read_chunk(here::here("R", "proj_packages.R"))
+knitr::read_chunk(here::here("R", "scenario1_simulation.R"))
+knitr::read_chunk(here::here("R", "scenario2_simulation.R"))
+load(here::here("data","Strauss.Scenario2.RData"))
+```
+
+```{r Standardize the covariates}
+```
+
+```{r required-packages}
+```
+
+```{r Scenario1}
+```
+
+```{r Scenario2}
+```
+
+```{r Theta2}
+```
+
+```{r Selection Performance}
+```
+
+```{r Properties of the estimate}
+```
+
+\section{1. Modèle de Strauss inhomogène avec $\gamma=.5$}
+
+```{r}
+Est2.BIC <- rbind(lapply(Estimate.Properties(Strauss.BIC.Lasso.Sc2,Theta.Init.Strauss2,"2"),round,4), lapply(Estimate.Properties(Strauss.BIC.Ridge.Sc2,Theta.Init.Strauss2,"2"),round,4), lapply(Estimate.Properties(Strauss.BIC.Enet.Sc2,Theta.Init.Strauss2,"2"),round,4), lapply(Estimate.Properties(Strauss.BIC.ALasso.Sc2,Theta.Init.Strauss2,"2"),round,4), lapply(Estimate.Properties(Strauss.BIC.AEnet.Sc2,Theta.Init.Strauss2,"2"),round,4))
+Est2.ERIC <- rbind(lapply(Estimate.Properties(Strauss.ERIC.Lasso.Sc2,Theta.Init.Strauss2,"2"),round,4), lapply(Estimate.Properties(Strauss.ERIC.Ridge.Sc2,Theta.Init.Strauss2,"2"),round,4), lapply(Estimate.Properties(Strauss.ERIC.Enet.Sc2,Theta.Init.Strauss2,"2"),round,4), lapply(Estimate.Properties(Strauss.ERIC.ALasso.Sc2,Theta.Init.Strauss2,"2"),round,4), lapply(Estimate.Properties(Strauss.ERIC.AEnet.Sc2,Theta.Init.Strauss2,"2"),round,4))
+row.names(Est2.BIC) <- row.names(Est2.ERIC) <- c("Lasso","Ridge","Enet","ALasso","AEnet")
+colnames(Est2.BIC) <- colnames(Est2.ERIC) <- c("Biais","Var","MSE","FPR","TPR")
+knitr::kable(Est2.BIC, caption = "Propriétés de l'estimation et Performance de la sélection avec la méthode BIC")
+knitr::kable(Est2.ERIC, caption = "Propriétés de l'estimation et Performance de la sélection avec la méthode ERIC")
+```

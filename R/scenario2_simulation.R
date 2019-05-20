@@ -1,5 +1,7 @@
 # Scenario 2: Building multicolinearity
 ## Runner scenario 1 avant
+## ---- Scenario2 ----
+library(spatstat)
 Sigma <- matrix(NA, nrow=50, ncol=50) 
 for(i in 1:50) Sigma[i,] <- 0.7^(abs(i-(1:50)))
 Sigma[1,2] <- Sigma[2,1] <- 0
@@ -14,6 +16,11 @@ for(i in 1:50) { Qim2[,,i] <- sum_vec_array(V[i,],Qim1)}
 Qim2.cr <- Standardize.cov(Qim2,W)
 beta0.sc2 <- round ( log((4000/ integral( exp(2*Qim2.cr[[1]]+0.75*Qim2.cr[[2]]),W) ) ),4)
 trend.function2 <- exp(2*Qim2.cr[[1]]+0.75*Qim2.cr[[2]])
+
+## ---- Theta2 ----
+Theta.Init.Strauss2 <- c(beta0.sc2,2,0.75,rep(0,48),log(0.5))
+Theta.Init.Poisson2 <- c(beta0.sc2,2,0.75,rep(0,48),log(1))
+Theta.Init.Geyer2 <- c(beta0.sc2,2,0.75,rep(0,48),log(1.5))
 
 ########################-------------------- Simulation Results for Scenario 2
 

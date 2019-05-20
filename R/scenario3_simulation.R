@@ -1,8 +1,11 @@
+## ---- Scenario3 ----
+library(spatstat)
 library(readxl)
 ## If not installed, we need the here package
 soil_nut <- read_xls(here::here("data","bci.block20.data.xls"),sheet=2)
 soil_nut_data <- as.data.frame(soil_nut)
 soil_nut_im <- as.im(soil_nut_data)
+W <- owin(c(0,1000),c(0,500))
 Qim3 <- array(0, dim=c(101,201,15)) 
 Qim3[,,1] <- bei.extra$elev$v
 Qim3[,,2] <- bei.extra$grad$v
@@ -10,6 +13,11 @@ for(i in 3:15) Qim3[,,i][1:25,1:50] <- soil_nut_im[[(i-2)]]$v
 Qim3.cr <- Standardize.cov(Qim3,W)
 beta0.sc3 <- round ( log((4000/ integral( exp(2*Qim3.cr[[1]]+0.75*Qim3.cr[[2]]),W) ) ),4)
 trend.function3 <- exp(2*Qim3.cr[[1]]+0.75*Qim3.cr[[2]])
+
+## ---- Theta3 ----
+Theta.Init.Strauss3 <- c(beta0.sc3,2,0.75,rep(0,13),log(0.5))
+Theta.Init.Poisson3 <- c(beta0.sc3,2,0.75,rep(0,13),log(1))
+Theta.Init.Geyer3 <- c(beta0.sc3,2,0.75,rep(0,13),log(1.5))
 
 ########################-------------------- Simulation Results for Scenario 3
 
