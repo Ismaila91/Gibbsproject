@@ -140,7 +140,7 @@ Emp_vcov <- function(X,cov.nb,Prob,trend.f,int.m,cov.list,nb.it,f.dum){
 
 #############################################################################################
 
-## Standardize the covariates
+## ---- Standardize the covariates ----
 Standardize.cov <- function(Qimage, Wdw){
   cov.list <- NULL
   Qmeans <- apply(matrix(Qimage, prod(dim(Qimage[,,1])), length(Qimage[1,1,])), 2, mean)
@@ -154,8 +154,7 @@ Standardize.cov <- function(Qimage, Wdw){
 
 ####################################################################################################################
 
-## Selection Performance
-
+## ---- Selection Performance ----
 # Computation of TPR, True positive rate
 TPR.Scenario12 <- function(Vect){
   return(sum(Vect[c(2,3)]!=0)/2)
@@ -181,8 +180,8 @@ PPV.Scenario12 <- function(Vect){
 
 ########################################################################################################################
 
-## Properties of the estimate
 
+## ---- Properties of the estimate ----
 ## Properties of the estimate: Bias, Variance, MSE, TPR and FPR
 Estimate.Properties <- function(Est.theta, init.theta, Scenario) {
   Bias.est <- sqrt(sum((apply(Est.theta,2,mean)[-1] - init.theta[-1])^2))
@@ -193,5 +192,9 @@ Estimate.Properties <- function(Est.theta, init.theta, Scenario) {
   TPR.est <- 100*mean(apply(Est.theta, 1, TPR.Scenario12))
   return(list(Bias=Bias.est, Var=Var.est, MSE=MSE.est, FPR=FPR.est, TPR=TPR.est))
 }
+
+
+
+
 
 
