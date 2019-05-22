@@ -12,7 +12,7 @@ sum_vec_array <- function(Vect,Arr){
   return(s)
 }
 Qim2 <- array(0, dim=c(101,201,50))
-for(i in 1:50) { Qim2[,,i] <- sum_vec_array(V[i,],Qim1)}
+for(i in 1:50) { Qim2[,,i] <- sum_vec_array(V[,i],Qim1)}
 Qim2.cr <- Standardize.cov(Qim2,W)
 beta0.sc2 <- round ( log((4000/ integral( exp(2*Qim2.cr[[1]]+0.75*Qim2.cr[[2]]),W) ) ),4)
 trend.function2 <- exp(2*Qim2.cr[[1]]+0.75*Qim2.cr[[2]])

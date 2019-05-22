@@ -82,9 +82,10 @@ gpp_reg <- function(pp, Qimage, int, method='nopen', tuning='BIC', f.dummy=2,Pr=
   H.theta <- V.theta <- NULL
   H.theta <- vcov(temp, what="fisher", hessian=TRUE, fine=TRUE)
   #browser()
-  if(n > 2500){ V.theta <- Emp_vcov(X=pp,cov.nb=tot.cov,Prob=Pr,trend.f=as.formula(paste('~',rhs)),int.m=int,cov.list=cov.list, 
-                                    nb.it=100,f.dum=f.dummy) }
-  else{ V.theta <- vcov(temp, fine=TRUE)}
+  #if(n > 2500){ V.theta <- Emp_vcov(X=pp,cov.nb=tot.cov,Prob=Pr,trend.f=as.formula(paste('~',rhs)),int.m=int,cov.list=cov.list, 
+   #                                 nb.it=100,f.dum=f.dummy) }
+  #else{ }
+  V.theta <- vcov(temp, fine=TRUE)
   H <- V <- NULL
   for (i in 1:length(lambda))
   {
