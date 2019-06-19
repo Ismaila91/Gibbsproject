@@ -27,38 +27,39 @@ Theta.Init.Geyer2 <- c(beta0.sc2,2,0.75,rep(0,48),log(1.5))
 ######-------------------------- gamma=0.5 for strauss model
 
 ## Lasso method
-Strauss.BIC.Lasso.Sc2 <- Simulation.GPP(number.iterations=100,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
+Strauss.BIC.Lasso.Sc2 <- Simulation.GPP(number.iterations=500,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
                                         Qim=Qim2,int.mod=Strauss(12),ns=4000,f.dum=8,Pr=.6)
-Strauss.ERIC.Lasso.Sc2 <- Simulation.GPP(number.iterations=100,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
+Strauss.ERIC.Lasso.Sc2 <- Simulation.GPP(number.iterations=500,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
                                          Qim=Qim2,int.mod=Strauss(12),inf.criteria="ERIC",f.dum=8,ns=4000,Pr=.6)
 
 ## Ridge method
-Strauss.BIC.Ridge.Sc2 <- Simulation.GPP(number.iterations=100,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
+Strauss.BIC.Ridge.Sc2 <- Simulation.GPP(number.iterations=500,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
                                         Qim=Qim2,int.mod=Strauss(12),ns=4000,f.dum=8,met="ridge",Pr=.6)
-Strauss.ERIC.Ridge.Sc2 <- Simulation.GPP(number.iterations=100,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
+Strauss.ERIC.Ridge.Sc2 <- Simulation.GPP(number.iterations=500,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
                                          Qim=Qim2,int.mod=Strauss(12),inf.criteria="ERIC",f.dum=8,ns=4000,met="ridge",Pr=.6)
 
 ## Elastic Net method
-Strauss.BIC.Enet.Sc2 <- Simulation.GPP(number.iterations=100,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
+Strauss.BIC.Enet.Sc2 <- Simulation.GPP(number.iterations=500,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
                                        Qim=Qim2,int.mod=Strauss(12),ns=4000,f.dum=8,met="enet",Pr=.6)
-Strauss.ERIC.Enet.Sc2 <- Simulation.GPP(number.iterations=100,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
+Strauss.ERIC.Enet.Sc2 <- Simulation.GPP(number.iterations=500,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
                                         Qim=Qim2,int.mod=Strauss(12),inf.criteria="ERIC",f.dum=8,ns=4000,met="enet",Pr=.6)
 
 ## Adaptive Lasso method
-Strauss.BIC.ALasso.Sc2 <- Simulation.GPP(number.iterations=100,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
+Strauss.BIC.ALasso.Sc2 <- Simulation.GPP(number.iterations=500,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
                                          Qim=Qim2,int.mod=Strauss(12),ns=4000,f.dum=8,met="al",Pr=.6)
-Strauss.ERIC.ALasso.Sc2 <- Simulation.GPP(number.iterations=100,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
+Strauss.ERIC.ALasso.Sc2 <- Simulation.GPP(number.iterations=500,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
                                           Qim=Qim2,int.mod=Strauss(12),inf.criteria="ERIC",f.dum=8,ns=4000,met="al",Pr=.6)
 
 ## Adaptive Elastic Net method 
-Strauss.BIC.AEnet.Sc2 <- Simulation.GPP(number.iterations=100,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
+Strauss.BIC.AEnet.Sc2 <- Simulation.GPP(number.iterations=500,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
                                         Qim=Qim2,int.mod=Strauss(12),ns=4000,f.dum=8,met="aenet",Pr=.6)
-Strauss.ERIC.AEnet.Sc2 <- Simulation.GPP(number.iterations=100,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
+Strauss.ERIC.AEnet.Sc2 <- Simulation.GPP(number.iterations=500,beta0=beta0.sc2,par.interact=.5,wdow=W,tr=trend.function2,
                                          Qim=Qim2,int.mod=Strauss(12),inf.criteria="ERIC",f.dum=8,ns=4000,met="aenet",Pr=.6)
 
 save(Strauss.BIC.Lasso.Sc2,Strauss.ERIC.Lasso.Sc2,Strauss.BIC.Ridge.Sc2,Strauss.ERIC.Ridge.Sc2,Strauss.BIC.Enet.Sc2,
      Strauss.ERIC.Enet.Sc2,Strauss.BIC.ALasso.Sc2,Strauss.ERIC.ALasso.Sc2,Strauss.BIC.AEnet.Sc2,
      Strauss.ERIC.AEnet.Sc2, file="data/Strauss.Scenario2.RData")
+
 
 ######-------------------------- gamma=1 for Poisson model
 

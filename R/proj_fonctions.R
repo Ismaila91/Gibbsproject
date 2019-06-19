@@ -1,7 +1,7 @@
 library(glmnet)
 library(spatstat)
 
-gpp_reg <- function(pp, Qimage, int, method='nopen', tuning='BIC', f.dummy=2,Pr=NULL){
+gpp_reg <- function(pp, Qimage, int, method='nopen', tuning='BIC', f.dummy=2){
   
   # Range of the observation window
   int.x <- pp$window$xrange
@@ -81,11 +81,9 @@ gpp_reg <- function(pp, Qimage, int, method='nopen', tuning='BIC', f.dummy=2,Pr=
   Q.new <- cbind(1,Q)
   H.theta <- V.theta <- NULL
   H.theta <- vcov(temp, what="fisher", hessian=TRUE, fine=TRUE)
-  #browser()
-  #if(n > 2500){ V.theta <- Emp_vcov(X=pp,cov.nb=tot.cov,Prob=Pr,trend.f=as.formula(paste('~',rhs)),int.m=int,cov.list=cov.list, 
-   #                                 nb.it=100,f.dum=f.dummy) }
-  #else{ }
-  V.theta <- vcov(temp, fine=TRUE)
+  if(n > 2500) V.theta <- Emp_vcov(Temp=temp,cov.nb=tot.cov,trend.f=as.formula(paste('~',rhs)),int.m=int,    
+                                   cov.list=cov.list,nb.it=100,f.dum=f.dummy)
+  else{V.theta <- vcov(temp, fine=TRUE)}
   H <- V <- NULL
   for (i in 1:length(lambda))
   {
@@ -98,8 +96,8 @@ gpp_reg <- function(pp, Qimage, int, method='nopen', tuning='BIC', f.dummy=2,Pr=
       V = V[-ind.zero,-ind.zero]
       H = H[-ind.zero,-ind.zero]
     }
-    if (tuning == "BIC")     {inf.criteria = -2*logpseudolike + (sum(diag(H%*%V)))*log(N)}
-    if (tuning == "ERIC")    {inf.criteria = -2*logpseudolike + (sum(diag(H%*%V)))*log(1/lambda[i])}
+    if (tuning == "BIC")     {inf.criteria = -2*logpseudolike + (sum(diag(H%*%V)))*log(n)}
+    if (tuning == "ERIC")    {inf.criteria = -2*logpseudolike + (sum(diag(H%*%V)))*log((n/N)*lambda[i])}
     
     if(inf.criteria < optim.inf.criteria){
       index.optim.theta = i
@@ -115,28 +113,26 @@ gpp_reg <- function(pp, Qimage, int, method='nopen', tuning='BIC', f.dummy=2,Pr=
 
 ## Main function 
 Simulation.GPP <- function(Model="strauss",number.iterations=50,beta0,par.interact=.2,R=12,wdow=square(1),tr,ns=1000,
-                           f.dum=2,satur=NULL,Qim,int.mod,met="lasso",inf.criteria="BIC",Pr=.8){
+                           f.dum=2,satur=NULL,Qim,int.mod,met="lasso",inf.criteria="BIC"){
   if(Model=="strauss") mod <- list(cif=Model, par=list(beta=exp(beta0), gamma=par.interact, r=R), w=wdow, trend=tr)
   if(Model=="geyer") mod <- list(cif=Model, par=list(beta=exp(beta0), gamma=par.interact, r=R, sat=satur), w=wdow, trend=tr)
   if(Model=="areaint") mod <- list(cif=Model, par=list(beta=exp(beta0), eta=par.interact, r=R), w=wdow, trend=tr)
   Theta <- matrix(NA, nrow=number.iterations,ncol=dim(Qim)[3]+2)
   for(i in 1:number.iterations){
     X <- rmh(mod, start=list(n.start=ns), control=list(nrep=1e6), verbose=FALSE)
-    #browser()
-    Theta[i,] <- gpp_reg(pp=X, Qimage=Qim, int=int.mod, method=met, tuning=inf.criteria, f.dummy=f.dum,Pr=Pr)[[2]]
+    Theta[i,] <- gpp_reg(pp=X, Qimage=Qim, int=int.mod, method=met, tuning=inf.criteria, f.dummy=f.dum)[[2]]
   }
   return(Theta)
 }
 
-Emp_vcov <- function(X,cov.nb,Prob,trend.f,int.m,cov.list,nb.it,f.dum){
-  VCOV.X.th <- array(NA, dim=c(cov.nb+2,cov.nb+2,nb.it))
+Emp_vcov <- function(Temp,cov.nb,trend.f,int.m,cov.list,nb.it,f.dum){
+  var.cov <- matrix(NA, nrow = nb.it, ncol = cov.nb+2)
   for(i in 1:nb.it){
-    X.th <- rthin(X, P=Prob)
-    n.dum <- round(f.dum*sqrt(npoints(X.th)))
-    temp.th <- ppm(X.th, trend=trend.f, interaction=int.m, covariates=cov.list, nd=n.dum)
-    VCOV.X.th[,,i] <- vcov(temp.th, fine=TRUE)
-  }
-  return(apply(VCOV.X.th, 1:2, mean))
+    X.sim <- simulate(Temp, drop=TRUE)
+    n.dum.sim <- round(f.dum*sqrt(npoints(X.sim)))
+    var.cov[i,] <- ppm(X.sim, trend=trend.f, interaction=int.m, covariates=cov.list, nd=n.dum.sim)
+    }
+  return(var(var.cov))
 }
 
 #############################################################################################
@@ -185,12 +181,12 @@ PPV.Scenario12 <- function(Vect){
 ## ---- Properties of the estimate ----
 ## Properties of the estimate: Bias, Variance, MSE, TPR and FPR
 Estimate.Properties <- function(Est.theta, init.theta, Scenario) {
-  Bias.est <- sqrt(sum((apply(Est.theta,2,mean)[-1] - init.theta[-1])^2))
-  Var.est <- sum(apply(Est.theta,2,var)[-1])
-  MSE.est <- Bias.est^2 + Var.est
-  if(Scenario=="1" | Scenario=="2"){ FPR.est <- 100*mean(apply(Est.theta, 1, FPR.Scenario12))}
-  else FPR.est <- 100*mean(apply(Est.theta, 1, FPR.Scenario3))
-  TPR.est <- 100*mean(apply(Est.theta, 1, TPR.Scenario12))
+  Bias.est <- round(sqrt(sum((apply(Est.theta,2,mean)[-1] - init.theta[-1])^2)),2)
+  Var.est <- round(sum(apply(Est.theta,2,var)[-1]),2)
+  MSE.est <- round(Bias.est^2 + Var.est,2)
+  if(Scenario=="1" | Scenario=="2"){ FPR.est <- round(100*mean(apply(Est.theta, 1, FPR.Scenario12)),0)}
+  else FPR.est <- round(100*mean(apply(Est.theta, 1, FPR.Scenario3)),0)
+  TPR.est <- round(100*mean(apply(Est.theta, 1, TPR.Scenario12)),0)
   return(list(Bias=Bias.est, Var=Var.est, MSE=MSE.est, FPR=FPR.est, TPR=TPR.est))
 }
 

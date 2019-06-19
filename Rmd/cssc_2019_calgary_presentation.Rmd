@@ -1,0 +1,327 @@
+---
+title: Regularization techniques for inhomogeneous Gibbs point process models with
+  a diverging number of covariates
+author: "Ismaila Ba"
+date: '2019-05-21'
+output: beamer_presentation
+bibliography: 2019_ssc.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message=FALSE)
+```
+
+```{r echo=FALSE}
+library(spatstat)
+library(kableExtra)
+```
+
+
+
+
+## Gibbs Point Process
+
+- Gibbs Point Processes (GPP) constitute a large class of point processes with interaction between the points.
+
+- The interaction between the points can be repulsive or attractive. This means that GPP can model both clustering or inhibition.
+
+- In statistical physics, (infinite) GPP are standard models for modelling systems with a large number of interacting particles.
+
+## How a realization of GPP looks like?
+
+```{r,fig1,fig.height=4.3,fig.width=4.3,fig.align='center',echo=FALSE}
+plot(swedishpines)
+```
+
+## Characterization of GPP
+
+Let $\boldsymbol{X}$ be a GPP defined on $W \subseteq \mathbb{R}^d$ (usually d=2,3). We denote by $\boldsymbol{x}$ a realization of the GPP $\boldsymbol{X}$.
+
+- Probability density (exponential family):
+\begin{align}
+\label{density}
+f(\boldsymbol{x}; \boldsymbol{\theta}) = c_{\boldsymbol{\theta}} \exp(\beta^\top Z(\boldsymbol{x}) + \psi^\top S(\boldsymbol{x}))
+\end{align}
+where $\boldsymbol{\theta}=(\psi^\top, \beta^\top)^\top \in \mathbb{R}^{p}$ is a parameter vector to be estimated. We assume that $\psi$ and $\beta$ are of dimension respectively $p_1$ and $p_2$; and $p=p_1 + p_2$.
+
+$c_{\boldsymbol{\theta}}$: the normalizing constant; 
+
+$\beta^\top Z(\boldsymbol{x})$: trend term describing spatial inhomogeneity through spatial covariates; 
+
+$\psi^\top S(u,\boldsymbol{x})$: interaction term describing spatial dependence among points.
+
+
+## Characterization of GPP
+
+- Papangelou conditional intensity \newline
+For any location $u \in W$, we define the conditional intensity as follows:
+\begin{equation}
+\label{condint}
+\lambda_{\boldsymbol \theta}(u,\boldsymbol x)=
+\left\lbrace
+\begin{array}{ccc}
+f(\boldsymbol{x} \cup u; \boldsymbol{\theta})/f(\boldsymbol x; \boldsymbol{\theta})  & \mbox{for } & u \notin \boldsymbol x \\
+f(\boldsymbol x; \boldsymbol{\theta})/f(\boldsymbol x \setminus u; \boldsymbol{\theta}) & \mbox{for} & u \in \boldsymbol x 
+\end{array}\right.
+\end{equation}
+with $a/0:=0$ for $a \geq 0$. For exponential family of GPP, (\ref{condint}) becomes
+\[
+\lambda_{\boldsymbol{\theta}}(u,\boldsymbol{x})=\exp(\beta^\top Z(u) + \psi^\top S(u,\boldsymbol{x}))
+\]
+
+## More on the conditional intensity
+
+- $\lambda_{\boldsymbol{\theta}}(u,\boldsymbol x) \mathrm{d}u$ may be interpreted as the probability that has the process $\boldsymbol X$ to insert a point in a region  $\mathrm{d}u$ around $u$ that also respects the already existing configuration outside this region.
+
+- At points $u$ close to the edge of $W$, $\lambda_{\boldsymbol{\theta}}(u,\boldsymbol x)$ may depend on unobserved points of $\boldsymbol x$. This is called the boundary effect problem and to handle this, we use the minus sampling $D:=W\ominus R$, where $R < \infty$ is the range of $\boldsymbol{X}$.  
+
+- $\boldsymbol{X}$ has the finite range property if
+\[
+\lambda_{\boldsymbol{\theta}}(u,\boldsymbol x)=\lambda_{\boldsymbol{\theta}}(u,\boldsymbol x \cap B(u,R))
+\]
+where $B(u,R)$ is the ball centered at $u$ and radius $0 < R < \infty$. This means that the process does not allow the points to interact from each other except they are at a distance less or equal than $R$ apart.
+
+## Likelihood Inference on GPP
+
+- The normalizing constant $c_{\boldsymbol{\theta}}$ is generally intractable for GPP.
+
+- The latter point makes difficult to fit Gibbs models via maximum likelihood.
+
+- A reasonable alternative is to maximize the pseudolikehood function which does not involve the normalizing constant.
+
+The log-pseudolikelihood function is defined in $D$ by
+
+\begin{align}
+\label{pseudo}
+\mathbf{LPL}( \boldsymbol{x};\boldsymbol{\theta}) &=  {\sum_{u \in \mathbf{x} \cap D} \log\lambda_{\boldsymbol{\theta}}(u, \boldsymbol{x})} - {\int_D \lambda_{\boldsymbol{\theta}}(u,\boldsymbol{x})\mathrm{d}u}.    
+\end{align}
+
+## Regularization techniques
+
+The penalized log-Pseudolikelihood function:
+\begin{align}
+\label{penpseudo}
+Q(\boldsymbol{x};\boldsymbol{\theta})=\mathbf{LPL}( \boldsymbol{x};\boldsymbol{\theta}) - |D|{\sum_{j=1}^{p} p_{\lambda_{j}}(|\theta_{j}|)}.
+\end{align}
+
+- We look to maximize the function $Q$.
+
+- We do not make penalizations on the parameter $\psi$. The second term in (\ref{penpseudo}) becomes
+\[
+|D|{\sum_{j=p_1 + 1}^{p} p_{\lambda_{j}}(|\theta_{j}|)}.
+\]
+
+## Penalty functions
+
+\begin{itemize}
+\item $\ell_1$ norm:  $p_{\lambda}(\theta)= \lambda \theta$,
+\item $\ell_2$ norm:  $p_{\lambda}(\theta)=\frac12 \lambda \theta^2$,
+\item Elastic net: for $0 < \gamma < 1$, $p_{\lambda}(\theta)=\lambda \left \{ \gamma \theta + \frac12 (1-\gamma) \theta^2 \right \}$, 
+\item SCAD: for any $\gamma > 2$, $p_{\lambda}(\theta)= \left\lbrace
+\begin{array}{ccc}
+\lambda \theta  & \mbox{if} & \theta \leq \lambda \\
+\frac{\gamma \lambda \theta - \frac12(\theta^2+\lambda^2)}{\gamma - 1} & \mbox{if} & \lambda \leq \theta \leq \gamma \lambda \\
+\frac{\lambda^2(\gamma^2-1)}{2(\gamma-1)} & \mbox{if} & \theta \geq \gamma \lambda,
+\end{array}\right.$
+\item MC+: for any $\gamma > 1$, $p_{\lambda}(\theta)= \left\lbrace
+\begin{array}{ccc}
+\lambda \theta - \frac{\theta^2}{2 \gamma} & \mbox{if} & \theta \leq \gamma \lambda \\
+\frac12 \gamma \lambda^2& \mbox{if} & \lambda \leq \theta \leq \gamma \lambda.
+\end{array}\right.$
+\end{itemize}
+We also consider adaptive version of the convex penalty functions, i.e. adaptive lasso and adaptive elastic net. 
+
+## Numerical method
+
+From @baddeley2000practical, we have the following finite sum approximation:
+\[
+\int_{D} \lambda_{\boldsymbol{\theta}}(u,\boldsymbol x) \mathrm{d}u \approx \sum_{j=1}^{n+m} w_j \lambda_{\boldsymbol{\theta}}(u_j,\boldsymbol x)
+\]
+\begin{align}
+\label{approx}
+\mathbf{LPL}( \boldsymbol{x};\boldsymbol{\theta}) \approx \sum_{j=1}^{n+m} w_j (y_j\log\lambda_{\boldsymbol{\theta}}(u_j,\boldsymbol x)-\lambda_{\boldsymbol{\theta}}(u_j,\boldsymbol x))
+\end{align}
+where $y_j=\frac{1}{w_j}$ for $u_j \in \boldsymbol x$ and $y_j=0$ otherwise. The quadrature weights $w_j$ sum to the volume of $D$ i.e. $\sum_{j=1}^{n+m} w_j=\vert D \vert$.
+
+(\ref{approx}) corresponds to a quasi Poisson log-likelihood function.
+
+This approximation often requires large $m$ to perform well.
+
+## Numerical method
+
+\[
+Q(\boldsymbol{x};\boldsymbol{\theta}) \approx \underbrace {\sum_{j=1}^{n+m} w_j (y_j\log\lambda_{\boldsymbol{\theta}}(u_j,\boldsymbol x)-\lambda_{\boldsymbol{\theta}}(u_j,\boldsymbol x))- |D|{\sum_{j=1}^{p} p_{\lambda_{j}}(|\theta_{j}|)}}_{\mbox{ppm function } \; + \; \mbox{(glmnet or ncvreg) function}}
+\]
+
+For the implementation of the method in R, we need three functions or R packages:
+
+- ppm function in the spatstat package;
+
+- glmnet function for convex penalty functions;
+
+- ncvreg function for non convex penalty functions. Note that a modification of the ncvreg function is required to include options for weights. 
+
+## Main results
+
+- We present the asymptotic properties of the regularized pseudolikelihood estimator.
+
+- The eroded observation domain $D$ expands to $\mathbb{R}^{d}$, i.e. $D=D_n$, $n=1,2,\ldots$
+
+- Let $\lambda=\lambda_{n,j}$, $\mathbf{LPL} = \mathbf{LPL}_n$ and $Q=Q_n$ be indexed by n.
+
+- The dimension of the parameter $\theta$ is now of dimension $p_n$ which diverges as $n \to \infty$.
+
+- Let $\boldsymbol{\theta}_0=(\boldsymbol{\theta}_{01}^\top,\boldsymbol{\theta}_{02}^\top)^\top=(\boldsymbol{\theta}_{01}^\top,\boldsymbol{0}^\top)^\top$ be the $p_n$-dimensional vector of true coefficients, where $\boldsymbol{\theta}_{01}$ is of dimension $p_1 +s$ and $\boldsymbol{\theta}_{02}$ of dimension $p_n - p_1 -s$.
+
+- $\boldsymbol{\theta}_{01}$ and $\boldsymbol{\theta}_{02}$ are respectively the vector of nonzero coefficients and that of zero coefficients.
+
+## Main results
+
+\begin{theorem}
+\label{the1}
+\[
+{\bf \| \boldsymbol {\hat \theta} -\boldsymbol \theta_0\|}=O_\mathrm{P}(\sqrt{p_n/|D_n|})
+\]
+where $\boldsymbol {\hat \theta}$ is a local maximizer of $Q_n(\boldsymbol{X};\theta)$. This means that the regularized pseudolikelihood estimator is root-$(|D_n|/p_n)$ consistent.
+\end{theorem}
+
+\begin{theorem}
+\label{the2}
+\begin{enumerate}[(i)]
+\item Sparsity: $\mathrm{P}(\boldsymbol{\hat \theta}_2=0) \to 1$ as $n \to \infty$,
+\item Asymptotic Normality: $|D_n|^{1/2} \boldsymbol \Sigma_n(\boldsymbol X;\boldsymbol{\theta}_{0})^{-1/2}(\boldsymbol{\hat \theta}_1- \boldsymbol{\theta}_{01})\xrightarrow{d} \mathcal{N}(0, \mathbf{I}_{m})$,
+\end{enumerate}
+where $m=p_1 + s$.
+\end{theorem}
+
+## Some comments on the results  
+
+- The above results are also valid for the unregularized pseudolikelihood function.
+
+- Necessary conditions to satisfy for the two main results do not hold for the Lasso, Rigde and Elastic Net regularization methods. This prevents us for applying the two mentionned theorems for these methods.
+
+## Simulation study
+
+- We conduct a simulation study with three differents scenarios.
+
+- We consider the inhomogeneous Strauss model with $\gamma=.5$.
+
+- To investigate the performance of the estimation, we compute the empirical bias, variance and mean squarred error (MSE).
+
+- We also investigate the performance of the selection through the empirical true positive rate (TPR) and false positive rate (FPR). TPR corresponds to the ratio of the selected true covariates over the number of the true covariates, while FPR corresponds to the ratio of the selected noisy covariates over the number of noisy covariates.
+
+- For the selection of the tuning parameter, we consider two criteria: the composite bayesian information criterion (cBIC) and the composite extented regularized information criteria (cERIC).
+
+## Simulation set-up
+
+- The setting is simalar to that of @choiruddin2018convex.
+
+- The spatial domain is $D=[0,1000] \times [0,500]$. The $201 \times 101$ pixel images of elevation ($z_1$) and gradient of elevation ($z_2$) contained in the \textbf{bei} datasets of \textbf{spatstat} library in \textbf{R} are first centered and scaled; and  used as true two covariates. 
+
+- We set the true conditional intensity to be $\lambda_{\boldsymbol{\theta}}(u;\boldsymbol x)=\exp\{\beta_0 + \beta_1 z_1(u) + \beta_2 z_2(u) + \psi S(u;\boldsymbol x) \}$ where $\beta_1=2$, $\beta_2=0.75$ and $\psi=\log(0.5)$. $\beta_0$ is chosen such that each realization has in average $4000$ points with the inhomogeneous Poisson model i.e when $\psi=0$.
+
+- In addition to the two covariates, we create three different scenarios to define extra covariates.
+
+## Simulation set-up
+
+- Scenario 1: We generate $48$ $201 \times 101$ pixel images of covariates as standard Gaussian white noise and denote them by $x_3(u),\ldots,x_{50}$. We define $\boldsymbol{z}(u)=\{1,x_1(u),\ldots,x_{50}\}$ as the covariates vector. The regression coefficients for $z_3,\ldots,z_{50}$ are set to zero.
+
+- Scenario 2: We first generate $48$ $201 \times 101$ pixel images of covariates as in Scenario 1. Second, we transform them, together with $x_1$ and $x_2$, to have multicolinearity. In particular, we define $\boldsymbol{z}(u)=\boldsymbol{V}^\top \boldsymbol{x}(u)$, where $\boldsymbol{x}(u) = \{ x_1(u),\ldots,x_{50}\}^\top$. More precisely, $\boldsymbol{V}$ is such that $\boldsymbol{\Omega}=\boldsymbol{V}^\top \boldsymbol{V}$, and $(\Omega)_{ij}=(\Omega)_{ji}=0.7^{\vert i - j \vert}$ for $i,j=1,\ldots,50$ except $(\Omega)_{12}=(\Omega)_{21}=0$, to preserve the correlation between $x_1$ and $x_2$. The regression coefficients for $z_3,\ldots,z_{50}$ are set to zero.  
+
+## Simulation set-up
+
+- Scenario 3: We center and scale the $13$ $50 \times 25$ pixel images of soil nutrients covariates obtained from the study in tropical forest of Barro Colorado Island (BCI) in central Panama, convert them to be $201 \times 101$ pixel images as $x_1$ and $x_2$, and use them as the extra covariates. Together with $x_1$ and $x_2$, we keep the structure of the covariance matrix to preserve the complexity of the situation. In this setting, we have $\boldsymbol{z}(u)=\{1,x_1(u),\ldots,x_{15}\}^\top$. The regression coefficents for $z_3,\ldots,z_{15}$ are set to zero. 
+
+## Simulation results (Scenario 1, BIC)
+
+```{r}
+knitr::read_chunk(here::here("R", "proj_fonctions.R"))
+knitr::read_chunk(here::here("R", "proj_packages.R"))
+knitr::read_chunk(here::here("R", "scenario1_simulation.R"))
+knitr::read_chunk(here::here("R", "scenario2_simulation.R"))
+knitr::read_chunk(here::here("R", "scenario3_simulation.R"))
+load(here::here("data","Strauss.Scenario1.RData"))
+load(here::here("data","Strauss.Scenario2.RData"))
+load(here::here("data","Strauss.Scenario3.RData"))
+```
+
+
+```{r Standardize the covariates}
+```
+
+```{r required-packages}
+```
+
+```{r Scenario1}
+```
+
+```{r Theta1}
+```
+
+```{r Scenario2}
+```
+
+```{r Theta2}
+```
+
+```{r Scenario3}
+```
+
+```{r Theta3}
+```
+
+```{r Selection Performance}
+```
+
+```{r Properties of the estimate}
+```
+
+
+```{r}
+Est1.BIC <- rbind(lapply(Estimate.Properties(Strauss.BIC.Lasso.Sc1,Theta.Init.Strauss1,"1"),round,2), lapply(Estimate.Properties(Strauss.BIC.Ridge.Sc1,Theta.Init.Strauss1,"1"),round,2), lapply(Estimate.Properties(Strauss.BIC.Enet.Sc1,Theta.Init.Strauss1,"1"),round,2), lapply(Estimate.Properties(Strauss.BIC.ALasso.Sc1,Theta.Init.Strauss1,"1"),round,2), lapply(Estimate.Properties(Strauss.BIC.AEnet.Sc1,Theta.Init.Strauss1,"1"),round,2))
+Est1.ERIC <- rbind(lapply(Estimate.Properties(Strauss.ERIC.Lasso.Sc1,Theta.Init.Strauss1,"1"),round,2), lapply(Estimate.Properties(Strauss.ERIC.Ridge.Sc1,Theta.Init.Strauss1,"1"),round,2), lapply(Estimate.Properties(Strauss.ERIC.Enet.Sc1,Theta.Init.Strauss1,"1"),round,2), lapply(Estimate.Properties(Strauss.ERIC.ALasso.Sc1,Theta.Init.Strauss1,"1"),round,2), lapply(Estimate.Properties(Strauss.ERIC.AEnet.Sc1,Theta.Init.Strauss1,"1"),round,2))
+row.names(Est1.BIC) <- row.names(Est1.ERIC) <- c("Lasso","Ridge","Enet","ALasso","AEnet")
+colnames(Est1.BIC) <- colnames(Est1.ERIC) <- c("Biais","Var","MSE","FPR","TPR")
+knitr::kable(Est1.BIC, format = 'pandoc', caption = "Empirical prediction properties (Bias, Var and MSE) and empirical selection properties (TPR, FPR in %) based on 100 replications of inhomogeneous Strauss process on the domain D for Scenario 1 with BIC criterion.")
+```
+
+## Simulation Results (Scenario 1, ERIC)
+
+```{r}
+knitr::kable(Est1.ERIC, format= 'pandoc' ,caption = "Empirical prediction properties (Bias, Var and MSE) and empirical selection properties (TPR, FPR in %) based on 100 replications of inhomogeneous Strauss process on the domain D for Scenario 1 with ERIC criterion.")
+```
+
+## Simulation results (Scenario 2, BIC)
+
+```{r}
+Est2.BIC <- rbind(lapply(Estimate.Properties(Strauss.BIC.Lasso.Sc2,Theta.Init.Strauss2,"2"),round,2), lapply(Estimate.Properties(Strauss.BIC.Ridge.Sc2,Theta.Init.Strauss2,"2"),round,2), lapply(Estimate.Properties(Strauss.BIC.Enet.Sc2,Theta.Init.Strauss2,"2"),round,2), lapply(Estimate.Properties(Strauss.BIC.ALasso.Sc2,Theta.Init.Strauss2,"2"),round,2), lapply(Estimate.Properties(Strauss.BIC.AEnet.Sc2,Theta.Init.Strauss2,"2"),round,2))
+Est2.ERIC <- rbind(lapply(Estimate.Properties(Strauss.ERIC.Lasso.Sc2,Theta.Init.Strauss2,"2"),round,2), lapply(Estimate.Properties(Strauss.ERIC.Ridge.Sc2,Theta.Init.Strauss2,"2"),round,2), lapply(Estimate.Properties(Strauss.ERIC.Enet.Sc2,Theta.Init.Strauss2,"2"),round,2), lapply(Estimate.Properties(Strauss.ERIC.ALasso.Sc2,Theta.Init.Strauss2,"2"),round,2), lapply(Estimate.Properties(Strauss.ERIC.AEnet.Sc2,Theta.Init.Strauss2,"2"),round,2))
+row.names(Est2.BIC) <- row.names(Est2.ERIC) <- c("Lasso","Ridge","Enet","ALasso","AEnet")
+colnames(Est2.BIC) <- colnames(Est2.ERIC) <- c("Biais","Var","MSE","FPR","TPR")
+knitr::kable(Est2.BIC, format='pandoc', caption = "Empirical prediction properties (Bias, Var and MSE) and empirical selection properties (TPR, FPR in %) based on 100 replications of inhomogeneous Strauss process on the domain D for Scenario 2 with BIC criterion.")
+```
+
+## Simulation results (Scenario 2, ERIC)
+
+```{r}
+knitr::kable(Est2.ERIC, format='pandoc' ,caption = "Empirical prediction properties (Bias, Var and MSE) and empirical selection properties (TPR, FPR in %) based on 100 replications of inhomogeneous Strauss process on the domain D for Scenario 2 with ERIC criterion.")
+```
+
+## Simulation results (Scenario 3, BIC)
+
+```{r}
+Est3.BIC <- rbind(lapply(Estimate.Properties(Strauss.BIC.Lasso.Sc3,Theta.Init.Strauss3,"3"),round,2), lapply(Estimate.Properties(Strauss.BIC.Ridge.Sc3,Theta.Init.Strauss3,"3"),round,2), lapply(Estimate.Properties(Strauss.BIC.Enet.Sc3,Theta.Init.Strauss3,"3"),round,2), lapply(Estimate.Properties(Strauss.BIC.ALasso.Sc3,Theta.Init.Strauss3,"3"),round,2), lapply(Estimate.Properties(Strauss.BIC.AEnet.Sc3,Theta.Init.Strauss3,"3"),round,2))
+Est3.ERIC <- rbind(lapply(Estimate.Properties(Strauss.ERIC.Lasso.Sc3,Theta.Init.Strauss3,"3"),round,2), lapply(Estimate.Properties(Strauss.ERIC.Ridge.Sc3,Theta.Init.Strauss3,"3"),round,2), lapply(Estimate.Properties(Strauss.ERIC.Enet.Sc3,Theta.Init.Strauss3,"3"),round,2), lapply(Estimate.Properties(Strauss.ERIC.ALasso.Sc3,Theta.Init.Strauss3,"3"),round,2), lapply(Estimate.Properties(Strauss.ERIC.AEnet.Sc3,Theta.Init.Strauss3,"3"),round,2))
+row.names(Est3.BIC) <- row.names(Est3.ERIC) <- c("Lasso","Ridge","Enet","ALasso","AEnet")
+colnames(Est3.BIC) <- colnames(Est3.ERIC) <- c("Biais","Var","MSE","FPR","TPR")
+knitr::kable(Est3.BIC, format='pandoc' ,caption = "Empirical prediction properties (Bias, Var and MSE) and empirical selection properties (TPR, FPR in %) based on 100 replications of inhomogeneous Strauss process on the domain D for Scenario 3 with BIC criterion.")
+```
+
+## Simulation results (Scenario 3, ERIC)
+
+```{r}
+knitr::kable(Est3.ERIC, format='pandoc' ,caption = "Empirical prediction properties (Bias, Var and MSE) and empirical selection properties (TPR, FPR in %) based on 100 replications of inhomogeneous Strauss process on the domain D for Scenario 3 with ERIC criterion.")
+```
+
+## References
+
