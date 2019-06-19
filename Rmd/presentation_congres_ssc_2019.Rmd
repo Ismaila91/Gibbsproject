@@ -1,0 +1,263 @@
+---
+title: Regularization techniques for inhomogeneous Gibbs point process models with
+  a diverging number of covariates
+author: "Ismaila Ba (with Jean François Coeurjolly)" 
+date: '2019-05-29'
+output: beamer_presentation
+bibliography: 2019_ssc.bib
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message=FALSE)
+```
+
+```{r echo=FALSE}
+library(spatstat)
+library(kableExtra)
+```
+
+
+
+## Gibbs Point Process
+
+- Gibbs Point Processes (GPP) constitute a large class of point processes with interaction between the points.
+$\boldsymbol{x}=\{x_1,\ldots,x_n\}$, $x_i \in W \subseteq \mathbb{R}^{d}$, (usually d=2,3), $n$ random.
+
+- The interaction between the points can be repulsive or attractive. This means that GPP can model both clustering or inhibition.
+
+\centerline{\includegraphics[scale=.27]{trees}}
+
+## Characterization of GPP
+
+- Density with respect to a Poisson Process, say $f(\boldsymbol x; \boldsymbol{\theta})$ where $\boldsymbol{\theta}$ is a parameter vector to estimate;
+
+- Papangelou conditional intensity $\lambda_{\boldsymbol \theta}(u,\boldsymbol x)$ defined for any location $u \in W$ as follows:
+\begin{equation}
+\label{condint}
+\lambda_{\boldsymbol \theta}(u,\boldsymbol x)=
+\left\lbrace
+\begin{array}{ccc}
+f(\boldsymbol{x} \cup u; \boldsymbol{\theta})/f(\boldsymbol x; \boldsymbol{\theta})  & \mbox{for } & u \notin \boldsymbol x \\
+f(\boldsymbol x; \boldsymbol{\theta})/f(\boldsymbol x \setminus u; \boldsymbol{\theta}) & \mbox{for} & u \in \boldsymbol x 
+\end{array}\right.
+\end{equation}
+with $a/0:=0$ for $a \geq 0$.
+
+## Data: Barro Colorado Island (Hubell et al., 1999, 2005)
+\begin{columns}
+\begin{column}{0.60\textwidth}
+\begin{itemize}
+	\item $D=[0,1000m]\times[0,500m]$
+	\item $>300,\!000$ locations of trees
+	\item $\approx 100$ spatial covariates observed at fine scale (altitude, nature of soils,\dots)
+\end{itemize}
+\end{column}
+\begin{column}{0.48\textwidth}
+\begin{tabular}{llll}
+				\includegraphics[width=0.23\textwidth]{covar1sim3.jpg} & \includegraphics[width=0.23\textwidth]{covar2sim3.jpg} &  \includegraphics[width=0.23\textwidth]{covar3sim3.jpg} 
+			&\dots\\	% & \includegraphics[width=0.23\textwidth]{covar4sim3.jpg} 
+				% & 
+				% \includegraphics[width=0.23\textwidth]{covar5sim3.jpg}   \\
+				\includegraphics[width=0.23\textwidth]{covar6sim3.jpg} & \includegraphics[width=0.23\textwidth]{covar7sim3.jpg} & \includegraphics[width=0.23\textwidth]{covar8sim3.jpg}&\dots \\
+				% &  \includegraphics[width=0.23\textwidth]{covar9sim3.jpg} & \includegraphics[width=0.23\textwidth]{covar10sim3.jpg} \\ 
+				\includegraphics[width=0.23\textwidth]{covar11sim3.jpg} &  \includegraphics[width=0.23\textwidth]{covar12sim3.jpg} & \includegraphics[width=0.23\textwidth]{covar13sim3.jpg} &\dots
+				% &  \includegraphics[width=0.23\textwidth]{covar14sim3.jpg} &  \includegraphics[width=0.23\textwidth]{covar15sim3.jpg} \pause
+			\end{tabular}
+\end{column}
+\end{columns}
+
+\bigskip
+
+\hrulefill
+
+\begin{columns}
+\begin{column}{0.48\textwidth}
+\includegraphics[scale=.3]{bei3d}
+\end{column}
+\begin{column}{0.8\textwidth}
+\underline{Density of GPP} [Daniel et al., 2018]: 
+\[
+f(\boldsymbol{x}; \boldsymbol{\theta}) = c_{\boldsymbol{\theta}} \exp(\beta^\top Z(\boldsymbol{x}) + \psi^\top S(\boldsymbol{x})),	
+\] 
+$Z(\boldsymbol{x}) = \sum_{v \in \boldsymbol{x}}Z(v)$, $\boldsymbol{\psi}\in \mathbb{R}^{p_1}$, $\boldsymbol{\beta}\in \mathbb{R}^{p_2}$, $\boldsymbol{\theta}=(\psi^\top, \beta^\top)^\top \in \mathbb{R}^{p}$, \newline  $Z(v) =(Z_1(v),\dots,Z_{p_{2}}(v))^\top$ and \newline
+$S(\boldsymbol{x})$, the interaction function.
+
+\underline{Problem}: $p_{2}$ large, covariates very correlated, \newline
+$c_{\boldsymbol{\theta}}$ intractable.
+\end{column}
+\end{columns}
+
+## Estimation of $\boldsymbol{\theta}$ when $p_2$ is large and $c_{\boldsymbol{\theta}}$ intractable
+
+- The conditional intensity:
+\begin{align}
+\label{cint}
+\lambda_{\boldsymbol{\theta}}(u,\boldsymbol{x})=\exp(\beta^\top Z(u) + \psi^\top S(u,\boldsymbol{x}))
+\end{align}
+
+- The log-Pseudolikehood function:
+
+\begin{align}
+\label{pseudo}
+\mathbf{LPL}( \boldsymbol{x};\boldsymbol{\theta}) &=  {\sum_{u \in \mathbf{x} \cap D} \log\lambda_{\boldsymbol{\theta}}(u, \boldsymbol{x})} - {\int_D \lambda_{\boldsymbol{\theta}}(u,\boldsymbol{x})\mathrm{d}u}.    
+\end{align}
+
+- The penalized log-Pseudolikelihood function:
+\begin{align}
+\label{penpseudo}
+Q(\boldsymbol{x};\boldsymbol{\theta})=\mathbf{LPL}( \boldsymbol{x};\boldsymbol{\theta}) - |D|{\sum_{j=p_1 + 1}^{p} p_{\lambda_{j}}(|\theta_{j}|)}.
+\end{align}
+
+
+	\centerline{\fbox{\qquad \quad ${\displaystyle  \hat {\boldsymbol{\theta}} = \mathrm{argmax}_{\boldsymbol{\theta}} \; Q(\boldsymbol{x};\boldsymbol{\theta})}$\qquad \quad}}
+	
+## Penalty functions
+
+\begin{itemize}
+\item $\ell_1$ norm:  $p_{\lambda}(\theta)= \lambda \theta$,
+\item $\ell_2$ norm:  $p_{\lambda}(\theta)=\frac12 \lambda \theta^2$,
+\item Elastic net: for $0 < \gamma < 1$, $p_{\lambda}(\theta)=\lambda \left \{ \gamma \theta + \frac12 (1-\gamma) \theta^2 \right \}$, 
+\item SCAD: for any $\gamma > 2$, $p_{\lambda}(\theta)= \left\lbrace
+\begin{array}{ccc}
+\lambda \theta  & \mbox{if} & \theta \leq \lambda \\
+\frac{\gamma \lambda \theta - \frac12(\theta^2+\lambda^2)}{\gamma - 1} & \mbox{if} & \lambda \leq \theta \leq \gamma \lambda \\
+\frac{\lambda^2(\gamma^2-1)}{2(\gamma-1)} & \mbox{if} & \theta \geq \gamma \lambda,
+\end{array}\right.$
+\item MC+: for any $\gamma > 1$, $p_{\lambda}(\theta)= \left\lbrace
+\begin{array}{ccc}
+\lambda \theta - \frac{\theta^2}{2 \gamma} & \mbox{if} & \theta \leq \gamma \lambda \\
+\frac12 \gamma \lambda^2& \mbox{if} & \lambda \leq \theta \leq \gamma \lambda.
+\end{array}\right.$
+\end{itemize}
+We also consider adaptive version of the convex penalty functions, i.e. adaptive lasso and adaptive elastic net. 
+
+## Numerical method
+
+From @baddeley2015spatial, we have the following finite sum approximation:
+\[
+\int_{D} \lambda_{\boldsymbol{\theta}}(u,\boldsymbol x) \mathrm{d}u \approx \sum_{j=1}^{n+m} w_j \lambda_{\boldsymbol{\theta}}(u_j,\boldsymbol x)
+\]
+\begin{align*}
+\mathbf{LPL}( \boldsymbol{x};\boldsymbol{\theta}) \approx \sum_{j=1}^{n+m} w_j (y_j\log\lambda_{\boldsymbol{\theta}}(u_j,\boldsymbol x)-\lambda_{\boldsymbol{\theta}}(u_j,\boldsymbol x))
+\end{align*}
+\[
+Q(\boldsymbol{x};\boldsymbol{\theta}) \approx \underbrace {\sum_{j=1}^{n+m} w_j (y_j\log\lambda_{\boldsymbol{\theta}}(u_j,\boldsymbol x)-\lambda_{\boldsymbol{\theta}}(u_j,\boldsymbol x))}_{\mbox{\textbf{spatstat}}} - \underbrace{|D|{\sum_{j=p_1 + 1}^{p} p_{\lambda_{j}}(|\theta_{j}|)}}_{\mbox{\textbf{glmnet} or \textbf{ncvreg}}}
+\]
+
+where $y_j=\frac{1}{w_j}$ for $u_j \in \boldsymbol x$ and $y_j=0$ otherwise. \newline
+This approximation often requires large $m$ to perform well.
+
+## Main results
+
+- $D$ expands to $\mathbb{R}^{d}$, i.e. $D=D_n$, $n=1,2,\ldots$
+
+- $\lambda=\lambda_{n,j}$, $\mathbf{LPL} = \mathbf{LPL}_n$ and $Q=Q_n$.
+
+- $\boldsymbol{\theta}=(\boldsymbol{\theta}_{1}^\top,\boldsymbol{\theta}_{2}^\top)^\top=(\boldsymbol{\theta}_{1}^\top,\boldsymbol{0}^\top)^\top$, $\boldsymbol{\theta}_{1} \in \mathbb{R}^{p_1+s}$, $\boldsymbol{\theta}_{2} \in \mathbb{R}^{p_n - p_1 -s}$.
+
+- Define the sequences
+\begin{align*}	
+a_n &=\max_{j=1,\ldots,s} | p'_{\lambda_{n,j+p_1}}(|\beta_{0j}|)| ,  \\
+b_n &=\inf_{j=p_1+s+1,\ldots,p_n} \inf_{\substack{|\theta| \leq \epsilon_n \\ \theta \neq 0}} p'_{\lambda_{n,j}}(\theta) \label{eq:bn}, \mbox{ for } \epsilon_n=K_1\sqrt{\frac{p_n}{|D_n|}},	\\
+c_n &=  \max_{j=1,\dots,s} |p^{\prime\prime}_{\lambda_{n,j+p_1}}(|\beta_{0j}|) |  
+\end{align*}
+where $K_1$ is any positive constant.
+
+## Main results
+
+\begin{block}{Theorem 1 [\small{BaCoeurjolly19+}]}
+\begin{itemize}
+	\item Under some assumptions such that it works \dots
+	\item $a_n = O(|D_n|^{-1/2})$, $c_n=o(1)$.
+\end{itemize}
+Then there exists $\boldsymbol {\hat \theta}$ such that 
+
+\centerline{\fbox{\quad ${\displaystyle
+{\bf \| \boldsymbol {\hat \theta} -\boldsymbol \theta\|}=O_\mathrm{P}(\sqrt{p_n}(|D_n|^{-1/2}+a_n))
+}  $\quad }}
+\end{block}
+
+\begin{block}{Theorem 2 [\small{BaCoeurjolly19+}]}
+\begin{itemize}
+	\item Under some assumptions such that it works \dots
+	\item $p_n^3/|D_n|\to 0$, $a_n \sqrt{|D_n|} \to 0$, $b_n \sqrt{|D_n|/p_n^2} \to \infty$.
+\end{itemize}
+Then, as $n\to \infty$\\  
+\begin{enumerate}[(i)]
+\item Sparsity: $\mathrm{P}(\boldsymbol{\hat \theta}_2=0) \to 1$ as $n \to \infty$,
+\item Asymptotic Normality: $|D_n|^{1/2} \boldsymbol \Sigma_n(\boldsymbol X;\boldsymbol{\theta})^{-1/2}(\boldsymbol{\hat \theta}_1- \boldsymbol{\theta}_{1})\xrightarrow{d} \mathcal{N}(0, \mathbf{I}_{m})$,
+\end{enumerate}
+where $m=p_1 + s$.
+\end{block}
+
+## Values of $a_n$, $b_n$ and $c_n$ for some given regularization methods 
+
+\textbf{Possible?} $\Leftrightarrow$  $a_n\sqrt{|D_n|} \to 0$  and $b_n \sqrt{|D_n|/p_n^2} \to \infty$ 
+
+- Lasso: 
+\[
+a_n=b_n=\lambda_n, \quad c_n=0 \quad \text{and} \quad \textbf{Possible?} = \textbf{NO}.
+\]
+
+- Ridge: 
+\[
+a_n=\lambda_n \smash{\displaystyle \max_{j=1,\ldots,s} \{|\beta_{0j}|\}}, \quad b_n=0, \quad c_n=\lambda_n \quad \text{and} \quad \textbf{Possible?} = \textbf{NO} 
+\]
+
+- Adaptive Lasso: 
+\[
+a_n=\smash{\displaystyle \max_{j=1,...,s} \{\lambda_{n,j+p_1}\}}, \quad b_n=\smash{\displaystyle \inf_{j=p_1+s+1,...,p_n} \{\lambda_{n,j}\}}, \quad c_n=0  
+\]
+and  \textbf{Possible?}=\textbf{YES}.
+
+## Example of a GPP
+
+- $\boldsymbol{X}$: Inhomogeneous strauss point process:
+\[
+\lambda(u;\boldsymbol{x}) = \boldsymbol{\beta}(u) \gamma^{s_{R}(u;\boldsymbol{x})} \quad \text{where} \quad s_{R}(u;\boldsymbol{x})=\sum_{v \in \boldsymbol{x}} 1 (\Vert u - v \Vert \leq R). 
+\]
+
+- In log-linear form, $\boldsymbol{\beta}(u)=\exp(\beta^\top Z(u))$ and $\gamma=\exp(\psi)$.
+
+- $\boldsymbol{x}$ in $D=[0,1000] \times [0,500]$ with $Z(u)=(\underbrace{Z_1(u),Z_2(u)}_{\text{BCI cov.}})^\top$, $\beta_1=2$, $\beta_2=0.75$, $\gamma=0.5$ and $R=12$.
+
+\vspace*{-.4cm}
+\begin{figure}
+\centering
+\includegraphics[scale=.3]{strauss1}
+\end{figure}
+
+## Simulation study (similar to @choiruddin2018convex)
+
+- $D=[0,1000] \times [0,500]$; $\boldsymbol{X}$: Strauss model; $m=500$ replications
+
+- $\lambda_{n,j}$ is chosen using \textbf{BIC}-type criterion for composite likelihood
+\[
+cBIC(\lambda) = - 2 \mathbf{LPL}(\boldsymbol{x};\hat{\boldsymbol{\theta}}_{\lambda}) + \log(n) tr( \hat{J_\lambda}\hat{H_\lambda}) \quad \text{where}
+\]
+\[
+\hat{J_\lambda} = \text{var} (\mathbf{LPL}^{(1)}(\boldsymbol{x};\hat{\boldsymbol{\theta}}_{\lambda})) \quad \text{and}\quad \hat{H_\lambda} = \mathbb{E}(-\mathbf{LPL}^{(2)}(\boldsymbol{x};\hat{\boldsymbol{\theta}}_{\lambda})). 
+\]
+
+- $Z(u) = (\underbrace{Z_1(u),Z_2(u)}_{\text{true BCI cov.}},\underbrace{Z_3(u),\ldots,Z_{50}}_{\text{noisy correlated cov.}})^\top$
+
+- $Z_i$'s are then standardized, $\beta_1=2$, $\beta_2=.75$ and $\psi=\log(.5)$ 
+
+\begin{tabular}{llll}
+\hline 
+ &\multicolumn{3}{c}{1170 points in average}\\
+&&&\\
+& TPR (\%) & FPR (\%)& MSE  \\
+\hline
+Lasso &100 & 34  & 0.4\\
+A. Lasso &100&22& 0.05\\
+A. Enet&100 & 23& 0.07\\
+\hline
+\end{tabular}
+
+## References
+
+Ba, Ismaila, and Jean François Coeurjolly, "Regularization techniques for inhomogeneous Gibbs models with a diverging number of covariates", in preparation.
+
+Daniel, Jeffrey, Julie Horrocks, and Gary J Umphrey. 2018.“Penalized Composite Likelihoods for Inhomogeneous Gibbs PointProcess Models.”Computational Statistics & Data Analysis124:104–16.
