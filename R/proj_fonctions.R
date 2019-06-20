@@ -27,7 +27,6 @@ gpp_reg <- function(pp, Qimage, int, method='nopen', tuning='BIC', f.dummy=2){
   n <- npoints(pp)
   n.dummy <- round(f.dummy*sqrt(n))
   temp <- ppm(pp, trend=as.formula(paste('~',rhs)), interaction=int, covariates=cov.list, nd=n.dummy) 
-  #browser()
   temp_glm <- temp$internal$glmfit$data[,1:(length(temp$coef)+1)]
   yy <- temp_glm[,2]
   N <- length(yy)
@@ -79,12 +78,11 @@ gpp_reg <- function(pp, Qimage, int, method='nopen', tuning='BIC', f.dummy=2){
   optim.inf.criteria = 1e30
   index.optim.theta = NULL
   Q.new <- cbind(1,Q)
-  H.theta <- V.theta <- NULL
-  H.theta <- vcov(temp, what="fisher", hessian=TRUE, fine=TRUE)
+  H.theta <- vcov(temp, hessian=TRUE)
   if(n > 2500) V.theta <- Emp_vcov(Temp=temp,cov.nb=tot.cov,trend.f=as.formula(paste('~',rhs)),int.m=int,    
-                                   cov.list=cov.list,nb.it=100,f.dum=f.dummy)
-  else{V.theta <- vcov(temp, fine=TRUE)}
-  H <- V <- NULL
+                                   cov.list=cov.list,nb.it=50,f.dum=f.dummy)
+  else{V.theta <- vcov(temp)}
+  V.theta <- solve(V.theta)
   for (i in 1:length(lambda))
   {
     theta.cur = coef.theta[,i]
@@ -96,8 +94,8 @@ gpp_reg <- function(pp, Qimage, int, method='nopen', tuning='BIC', f.dummy=2){
       V = V[-ind.zero,-ind.zero]
       H = H[-ind.zero,-ind.zero]
     }
-    if (tuning == "BIC")     {inf.criteria = -2*logpseudolike + (sum(diag(H%*%V)))*log(n)}
-    if (tuning == "ERIC")    {inf.criteria = -2*logpseudolike + (sum(diag(H%*%V)))*log((n/N)*lambda[i])}
+    if (tuning == "BIC")     {inf.criteria = -2*logpseudolike + (sum(diag(V%*%H)))*log(n)}
+    if (tuning == "ERIC")    {inf.criteria = -2*logpseudolike + (sum(diag(V%*%H)))*log((n/N)*lambda[i])}
     
     if(inf.criteria < optim.inf.criteria){
       index.optim.theta = i
@@ -130,7 +128,7 @@ Emp_vcov <- function(Temp,cov.nb,trend.f,int.m,cov.list,nb.it,f.dum){
   for(i in 1:nb.it){
     X.sim <- simulate(Temp, drop=TRUE)
     n.dum.sim <- round(f.dum*sqrt(npoints(X.sim)))
-    var.cov[i,] <- ppm(X.sim, trend=trend.f, interaction=int.m, covariates=cov.list, nd=n.dum.sim)
+    var.cov[i,] <- ppm(X.sim, trend=trend.f, interaction=int.m, covariates=cov.list, nd=n.dum.sim)$coef
     }
   return(var(var.cov))
 }
@@ -148,6 +146,35 @@ Standardize.cov <- function(Qimage, Wdw){
   return(cov.list)
 } 
 
+
+## ---- Scenario I: Variables simulées ----
+sum_vec_array <- function(Vect,Arr){
+  s <- 0
+  for(i in 1:length(Vect)) s <- s + Vect[i]*Arr[,,i]
+  return(s)
+}
+built_scenario1 <- function(W, Nbre.points, fact.col=0.7){
+  p <- floor(3*area(W)^.25)
+  Qimage <- array(0, dim=c(101,201,p))
+  Qimage[,,1] <- bei.extra$elev$v
+  Qimage[,,2] <- bei.extra$grad$v
+  for(i in 3:p) { Qimage[,,i] <- rnoise(rnorm,dimyx=c(101,201),w=W,mean=0,sd=1)$v }
+  Sigma <- matrix(NA, nrow=p, ncol=p)
+  for(i in 1:p) Sigma[i,] <- fact.col^(abs(i-(1:p)))
+  Sigma[1,2] <- Sigma[2,1] <- 0
+  Sigma.svd <- svd(Sigma)
+  V <- t(Sigma.svd$u%*%sqrt(diag(Sigma.svd$d)))
+  if(all.equal(Sigma,t(V)%*%V)){
+    Qim <- array(0, dim=c(101,201,p))
+    for(i in 1:p) { Qim[,,i] <- sum_vec_array(V[,i],Qimage) }
+    Qim.cr <- Standardize.cov(Qim,W)
+    b <- round(log((Nbre.points/integral(exp(2*Qim.cr[[1]]+0.75*Qim.cr[[2]]),W))),4)
+    trend.function <- exp(2*Qim.cr[[1]]+0.75*Qim.cr[[2]])
+  }
+  else return("erreur decomposition")
+  
+  return(list(l0=p,l1=b,l2=Qim,l3=trend.function))
+}
 
 ####################################################################################################################
 
