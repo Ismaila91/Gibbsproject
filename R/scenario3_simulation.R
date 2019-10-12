@@ -2,6 +2,7 @@
 library(spatstat)
 library(readxl)
 ## If not installed, we need the here package
+#install.packages("here")
 soil_nut <- read_xls(here::here("data","bci.block20.data.xls"),sheet=2)
 soil_nut_data <- as.data.frame(soil_nut)
 soil_nut_im <- as.im(soil_nut_data)

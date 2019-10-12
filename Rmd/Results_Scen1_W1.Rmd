@@ -1,0 +1,130 @@
+---
+title: 'Simulation Results: Scenario 1 and Spatial domain W1'
+author: "Ismaila Ba"
+date: '2019-10-11'
+output: pdf_document
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::read_chunk(here::here("R", "proj_fonctions.R"))
+knitr::read_chunk(here::here("R", "proj_packages.R"))
+knitr::read_chunk(here::here("R", "Scenario_Variables_Simules.R"))
+load(here::here("data","ScenarioI_W1.RData"))
+```
+
+```{r Standardize the covariates}
+```
+
+```{r required-packages}
+```
+
+```{r ScenarioI}
+```
+
+```{r ScenarioI1}
+```
+
+```{r ThetaI1}
+```
+
+```{r Selection Performance}
+```
+
+```{r Properties of the estimate}
+```
+
+\[
+W_1 = [0,250] \times [0,125]. 
+\]
+
+```{r}
+W <- c("W1","W1","W1")
+Model <- c("Strauss","Strauss","Geyer")
+nbre.pts <- round(c(Strauss.02_W1$l15,Strauss.05_W1$l15,Geyer_W1$l15))
+```
+
+
+```{r}
+SCEN1.W1.BIC.LASSO <- rbind(Estimate.Properties(Strauss.02_W1$l1,Theta.Init.StraussI1.02,method="pen"),Estimate.Properties(Strauss.05_W1$l1,Theta.Init.StraussI1.05,method="pen"),Estimate.Properties(Geyer_W1$l1,Theta.Init.GeyerI1,method="pen"))
+SCENARIO1.W1.BIC.LASSO <- cbind(W,Model,SCEN1.W1.BIC.LASSO,nbre.pts)
+knitr::kable(SCENARIO1.W1.BIC.LASSO, caption="Lasso penalty and cBIC")
+```
+
+```{r}
+SCEN1.W1.ERIC.LASSO <- rbind(Estimate.Properties(Strauss.02_W1$l2,Theta.Init.StraussI1.02,method="pen"),Estimate.Properties(Strauss.05_W1$l2,Theta.Init.StraussI1.05,method="pen"),Estimate.Properties(Geyer_W1$l2,Theta.Init.GeyerI1,method="pen"))
+SCENARIO1.W1.ERIC.LASSO <- cbind(W,Model,SCEN1.W1.ERIC.LASSO,nbre.pts)
+knitr::kable(SCENARIO1.W1.ERIC.LASSO, caption="Lasso penalty and ERIC")
+```
+
+```{r}
+SCEN1.W1.BIC.RIDGE <- rbind(Estimate.Properties(Strauss.02_W1$l3,Theta.Init.StraussI1.02,method="pen"),Estimate.Properties(Strauss.05_W1$l3,Theta.Init.StraussI1.05,method="pen"),Estimate.Properties(Geyer_W1$l3,Theta.Init.GeyerI1,method="pen"))
+SCENARIO1.W1.BIC.RIDGE <- cbind(W,Model,SCEN1.W1.BIC.RIDGE,nbre.pts)
+knitr::kable(SCENARIO1.W1.BIC.RIDGE, caption="Ridge penalty and cBIC")
+```
+
+```{r}
+SCEN1.W1.ERIC.RIDGE <- rbind(Estimate.Properties(Strauss.02_W1$l4,Theta.Init.StraussI1.02,method="pen"),Estimate.Properties(Strauss.05_W1$l4,Theta.Init.StraussI1.05,method="pen"),Estimate.Properties(Geyer_W1$l4,Theta.Init.GeyerI1,method="pen"))
+SCENARIO1.W1.ERIC.RIDGE <- cbind(W,Model,SCEN1.W1.ERIC.RIDGE,nbre.pts)
+knitr::kable(SCENARIO1.W1.ERIC.RIDGE, caption="Ridge penalty and ERIC")
+```
+
+```{r}
+SCEN1.W1.BIC.ENET <- rbind(Estimate.Properties(Strauss.02_W1$l5,Theta.Init.StraussI1.02,method="pen"),Estimate.Properties(Strauss.05_W1$l5,Theta.Init.StraussI1.05,method="pen"),Estimate.Properties(Geyer_W1$l5,Theta.Init.GeyerI1,method="pen"))
+SCENARIO1.W1.BIC.ENET <- cbind(W,Model,SCEN1.W1.BIC.ENET,nbre.pts)
+knitr::kable(SCENARIO1.W1.BIC.ENET, caption="Elastic Net penalty and cBIC")
+```
+
+```{r}
+SCEN1.W1.ERIC.ENET <- rbind(Estimate.Properties(Strauss.02_W1$l6,Theta.Init.StraussI1.02,method="pen"),Estimate.Properties(Strauss.05_W1$l6,Theta.Init.StraussI1.05,method="pen"),Estimate.Properties(Geyer_W1$l6,Theta.Init.GeyerI1,method="pen"))
+SCENARIO1.W1.ERIC.ENET <- cbind(W,Model,SCEN1.W1.ERIC.ENET,nbre.pts)
+knitr::kable(SCENARIO1.W1.ERIC.ENET, caption="Elastic Net penalty and ERIC")
+```
+
+```{r}
+SCEN1.W1.BIC.ALASSO <- rbind(Estimate.Properties(Strauss.02_W1$l7,Theta.Init.StraussI1.02,method="pen"),Estimate.Properties(Strauss.05_W1$l7,Theta.Init.StraussI1.05,method="pen"),Estimate.Properties(Geyer_W1$l7,Theta.Init.GeyerI1,method="pen"))
+SCENARIO1.W1.BIC.ALASSO <- cbind(W,Model,SCEN1.W1.BIC.ALASSO,nbre.pts)
+knitr::kable(SCENARIO1.W1.BIC.ALASSO, caption="Adaptive Lasso penalty and cBIC")
+```
+
+```{r}
+SCEN1.W1.ERIC.ALASSO <- rbind(Estimate.Properties(Strauss.02_W1$l8,Theta.Init.StraussI1.02,method="pen"),Estimate.Properties(Strauss.05_W1$l8,Theta.Init.StraussI1.05,method="pen"),Estimate.Properties(Geyer_W1$l8,Theta.Init.GeyerI1,method="pen"))
+SCENARIO1.W1.ERIC.ALASSO <- cbind(W,Model,SCEN1.W1.ERIC.ALASSO,nbre.pts)
+knitr::kable(SCENARIO1.W1.ERIC.ALASSO, caption="Adaptive Lasso penalty and ERIC")
+```
+
+```{r}
+SCEN1.W1.BIC.AENET <- rbind(Estimate.Properties(Strauss.02_W1$l9,Theta.Init.StraussI1.02,method="pen"),Estimate.Properties(Strauss.05_W1$l9,Theta.Init.StraussI1.05,method="pen"),Estimate.Properties(Geyer_W1$l9,Theta.Init.GeyerI1,method="pen"))
+SCENARIO1.W1.BIC.AENET <- cbind(W,Model,SCEN1.W1.BIC.AENET,nbre.pts)
+knitr::kable(SCENARIO1.W1.BIC.AENET, caption="Adaptive Elastic Net penalty and cBIC")
+```
+
+```{r}
+SCEN1.W1.ERIC.AENET <- rbind(Estimate.Properties(Strauss.02_W1$l10,Theta.Init.StraussI1.02,method="pen"),Estimate.Properties(Strauss.05_W1$l10,Theta.Init.StraussI1.05,method="pen"),Estimate.Properties(Geyer_W1$l10,Theta.Init.GeyerI1,method="pen"))
+SCENARIO1.W1.ERIC.AENET <- cbind(W,Model,SCEN1.W1.ERIC.AENET,nbre.pts)
+knitr::kable(SCENARIO1.W1.ERIC.AENET, caption="Adaptive Elastic Net penalty and ERIC")
+```
+
+```{r}
+SCEN1.W1.BIC.SCAD <- rbind(Estimate.Properties(Strauss.02_W1$l11,Theta.Init.StraussI1.02,method="pen"),Estimate.Properties(Strauss.05_W1$l11,Theta.Init.StraussI1.05,method="pen"),Estimate.Properties(Geyer_W1$l11,Theta.Init.GeyerI1,method="pen"))
+SCENARIO1.W1.BIC.SCAD <- cbind(W,Model,SCEN1.W1.BIC.SCAD,nbre.pts)
+knitr::kable(SCENARIO1.W1.BIC.SCAD, caption="Scad penalty and cBIC")
+```
+
+```{r}
+SCEN1.W1.ERIC.SCAD <- rbind(Estimate.Properties(Strauss.02_W1$l12,Theta.Init.StraussI1.02,method="pen"),Estimate.Properties(Strauss.05_W1$l12,Theta.Init.StraussI1.05,method="pen"),Estimate.Properties(Geyer_W1$l12,Theta.Init.GeyerI1,method="pen"))
+SCENARIO1.W1.ERIC.SCAD <- cbind(W,Model,SCEN1.W1.ERIC.SCAD,nbre.pts)
+knitr::kable(SCENARIO1.W1.ERIC.SCAD, caption="Scad penalty and ERIC")
+```
+
+```{r}
+SCEN1.W1.BIC.MCP <- rbind(Estimate.Properties(Strauss.02_W1$l13,Theta.Init.StraussI1.02,method="pen"),Estimate.Properties(Strauss.05_W1$l13,Theta.Init.StraussI1.05,method="pen"),Estimate.Properties(Geyer_W1$l13,Theta.Init.GeyerI1,method="pen"))
+SCENARIO1.W1.BIC.MCP <- cbind(W,Model,SCEN1.W1.BIC.MCP,nbre.pts)
+knitr::kable(SCENARIO1.W1.BIC.MCP, caption="Mcp penalty and BIC")
+```
+
+```{r}
+SCEN1.W1.ERIC.MCP <- rbind(Estimate.Properties(Strauss.02_W1$l14,Theta.Init.StraussI1.02,method="pen"),Estimate.Properties(Strauss.05_W1$l14,Theta.Init.StraussI1.05,method="pen"),Estimate.Properties(Geyer_W1$l14,Theta.Init.GeyerI1,method="pen"))
+SCENARIO1.W1.ERIC.MCP <- cbind(W,Model,SCEN1.W1.ERIC.MCP,nbre.pts)
+knitr::kable(SCENARIO1.W1.ERIC.MCP, caption="Mcp penalty and ERIC")
+```

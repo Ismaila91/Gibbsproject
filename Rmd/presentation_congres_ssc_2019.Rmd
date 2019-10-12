@@ -1,8 +1,8 @@
 ---
 title: Regularization techniques for inhomogeneous Gibbs point process models with
   a diverging number of covariates
-author: "Ismaila Ba (with Jean François Coeurjolly)" 
-date: '2019-05-29'
+author: "Ismaila Ba (joint  work with Jean François Coeurjolly) \n Department of Mathematics and Statistics, UQÀM, CANADA 5th Spatial Statistics conference: Towards Spatial Data Science 10-13 July 2019 | SITGES, SPAIN" 
+date: '2019-07-13'
 output: beamer_presentation
 bibliography: 2019_ssc.bib
 ---
@@ -30,7 +30,7 @@ $\boldsymbol{x}=\{x_1,\ldots,x_n\}$, $x_i \in W \subseteq \mathbb{R}^{d}$, (usua
 
 ## Characterization of GPP
 
-- Density with respect to a Poisson Process, say $f(\boldsymbol x; \boldsymbol{\theta})$ where $\boldsymbol{\theta}$ is a parameter vector to estimate;
+- Density with respect to an unit Poisson Point Process, say $f(\boldsymbol x; \boldsymbol{\theta})$ where $\boldsymbol{\theta}$ is a parameter vector to estimate;
 
 - Papangelou conditional intensity $\lambda_{\boldsymbol \theta}(u,\boldsymbol x)$ defined for any location $u \in W$ as follows:
 \begin{equation}

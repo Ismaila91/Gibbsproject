@@ -1,0 +1,59 @@
+---
+title: "Simulation Results: Scenario 0"
+output: pdf_document
+---
+
+```{r setup, include=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::read_chunk(here::here("R", "proj_fonctions.R"))
+knitr::read_chunk(here::here("R", "proj_packages.R"))
+knitr::read_chunk(here::here("R", "Scenari0_Pas_de_penalisation.R"))
+load(here::here("data","Scenario01.RData"))
+```
+
+```{r Standardize the covariates}
+```
+
+```{r required-packages}
+```
+
+```{r Scenario01}
+```
+
+```{r Scenario02}
+```
+
+```{r Scenario03}
+```
+
+```{r Theta01}
+```
+
+```{r Theta02}
+```
+
+```{r Theta03}
+```
+
+```{r Selection Performance}
+```
+
+```{r Properties of the estimate}
+```
+We consider two covariates: elevation ($z_1$) and gradient of elevation ($z_2$) contained in the \textbf{bei} datasets. We fix the coeffients of $z_1$ and $z_2$ to be respectively $\beta_1=2$ and $\beta_2=.75$. The intercept is fixed so that we have in average 500 points in $W_1$, 2000 points in $W_2$ and 4000 points in $W_3$ where 
+\[
+W_1 = [0,250] \times [0,125],\quad W_2 = [0,500] \times [0,250] \quad \mbox{and} \quad W_3 = [0,1000] \times [0,500]. 
+\]
+
+```{r}
+W <- c("W1","W1","W2","W2","W3","W3","W1","W2","W3")
+Model <- rep(c("Strauss","Strauss","Geyer"),each=3)
+STR0 <- rbind(Estimate.Properties(Str01.02$l1,Theta.Init.Strauss01.02),Estimate.Properties(Str01.05$l1,Theta.Init.Strauss01.05),Estimate.Properties(Str02.02$l1,Theta.Init.Strauss02.02),Estimate.Properties(Str02.05$l1,Theta.Init.Strauss02.05),Estimate.Properties(Str03.02$l1,Theta.Init.Strauss03.02),Estimate.Properties(Str03.05$l1,Theta.Init.Strauss03.05))
+GEY0 <- rbind(Estimate.Properties(Gey01$l1,Theta.Init.Geyer01),Estimate.Properties(Gey02$l1,Theta.Init.Geyer02),Estimate.Properties(Gey03$l1,Theta.Init.Geyer03))
+nbre.pts <- round(c(Str01.02$l2,Str01.05$l2,Str02.02$l2,Str02.05$l2,Str03.02$l2,Str03.05$l2,Gey01$l2,Gey02$l2,Gey03$l2))
+SCEN0 <- rbind(STR0,GEY0)
+SCEN0 <- cbind(W,Model,SCEN0,nbre.pts)
+knitr::kable(SCEN0, caption="Empirical prediction properties based on 2000 replications of inhomogeneous Strauss model with gamma=.2,.5 and inhomogeneous Geyer model with gamma=1.5. No penalization and estimations are based on the pseudolikelihood function.")
+
+```
+
